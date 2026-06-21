@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { Schema, model, models, type HydratedDocument, type Model } from "mongoose";
 
 export type EventMode = "online" | "offline" | "hybrid";
@@ -45,12 +46,15 @@ const requiredStringArray = (field: string) => ({
   },
 } as const);
 
-const createSlug = (title: string): string =>
-  title
+const createSlug = (title: string): string => {
+  const slug = title
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+
+  return slug || `untitled-${randomUUID()}`;
+};
 
 const normalizeDate = (value: string): string => {
   const parsedDate = new Date(value);
@@ -110,6 +114,10 @@ const eventSchema = new Schema<Event>(
       trim: true,
       lowercase: true,
       unique: true,
+      validate: {
+        validator: isNonEmptyString,
+        message: "Slug cannot be empty.",
+      },
     },
     description: requiredString("Description"),
     overview: requiredString("Overview"),
