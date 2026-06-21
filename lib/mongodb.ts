@@ -25,6 +25,11 @@ if (!globalThis.mongooseCache) {
   globalThis.mongooseCache = cached;
 }
 
+/**
+ * Establishes a connection to the MongoDB database using Mongoose.
+ *
+ * @returns The Mongoose instance for the database connection.
+ */
 export async function connectToDatabase(): Promise<Mongoose> {
   if (cached.conn) {
     return cached.conn;
