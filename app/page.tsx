@@ -1,29 +1,14 @@
 import EventCard from "@/components/EventCard"
 import ExploreBtn from "@/components/ExploreBtn"
-import {Event} from "@/database/event.model"
+import { getEvents, type EventCardData } from "@/lib/actions/event.actions";
 import { cacheLife } from "next/cache";
 import { cacheTag } from "next/cache";
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
-const getBaseUrl = () => {
-  if (!BASE_URL) {
-    throw new Error("NEXT_PUBLIC_BASE_URL is required to fetch events.");
-  }
-
-  try {
-    return new URL(BASE_URL).origin;
-  } catch {
-    throw new Error("NEXT_PUBLIC_BASE_URL must be a valid absolute URL.");
-  }
-};
 
 const page = async () => {
   'use cache';
   cacheLife('hours')
   cacheTag('my-data')
-  const response = await fetch(`${getBaseUrl()}/api/events`);
-  const {events} = await response.json();
+  const events = await getEvents();
 
   return (
     <section>
@@ -35,7 +20,7 @@ const page = async () => {
       <div className="mt-20 space-y-7">
         <h3>Featured Events</h3>
         <ul className="events">
-          {events && events.length>0 && events.map((event: Event)=> (
+          {events.length > 0 && events.map((event: EventCardData)=> (
             <li key={event.slug}>
               <EventCard {...event}/>
             </li>

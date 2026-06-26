@@ -8,6 +8,30 @@ type CloudinaryUploadResult = {
     public_id: string;
 };
 
+const parseStringArrayField = (formData: FormData, field: string) => {
+    const rawValue = formData.get(field);
+
+    if (typeof rawValue !== "string") {
+        return { error: `${field} is required.` };
+    }
+
+    try {
+        const parsedValue = JSON.parse(rawValue);
+
+        if (
+            !Array.isArray(parsedValue) ||
+            parsedValue.length === 0 ||
+            !parsedValue.every((item): item is string => typeof item === "string" && item.trim().length > 0)
+        ) {
+            return { error: `${field} must be a JSON array of non-empty strings.` };
+        }
+
+        return { value: parsedValue.map((item) => item.trim()) };
+    } catch {
+        return { error: `${field} must be valid JSON.` };
+    }
+};
+
 export async function POST(req: NextRequest){
     try{
         await connectToDatabase();
@@ -30,8 +54,18 @@ export async function POST(req: NextRequest){
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer)
 
-        let     tags = JSON.parse(formData.get('tags') as string)
-        let agenda = JSON.parse(formData.get('agenda') as string)
+        const parsedTags = parseStringArrayField(formData, "tags");
+        const parsedAgenda = parseStringArrayField(formData, "agenda");
+
+        if (parsedTags.error || parsedAgenda.error) {
+            return NextResponse.json(
+                { message: "Invalid event data.", error: parsedTags.error ?? parsedAgenda.error },
+                { status: 400 },
+            );
+        }
+
+        const tags = parsedTags.value;
+        const agenda = parsedAgenda.value;
 
         const uploadResult = await new Promise<CloudinaryUploadResult>((resolve, reject)=>{
             cloudinary.uploader.upload_stream({resource_type: 'image', folder: 'DevEvents'}, (error, results)=>{
@@ -55,8 +89,8 @@ export async function POST(req: NextRequest){
         try{
             createdEvent = await EventModel.create({
                 ...event,
-                tags:tags,
-                agenda:agenda
+                tags,
+                agenda
             })
         }catch(e){
             try{
