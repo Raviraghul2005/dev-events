@@ -1,8 +1,15 @@
 import EventCard from "@/components/EventCard"
 import ExploreBtn from "@/components/ExploreBtn"
-import {events} from "@/lib/constants"
+import { getEvents, type EventCardData } from "@/lib/actions/event.actions";
+import { cacheLife } from "next/cache";
+import { cacheTag } from "next/cache";
 
-const page = () => {
+const page = async () => {
+  'use cache';
+  cacheLife('hours')
+  cacheTag('my-data')
+  const events = await getEvents();
+
   return (
     <section>
       <h1 className="text-center">The Hub for Every Dev <br /> Event You Cant Miss</h1>
@@ -13,8 +20,8 @@ const page = () => {
       <div className="mt-20 space-y-7">
         <h3>Featured Events</h3>
         <ul className="events">
-          {events.map((event)=> (
-            <li key={event.title}>
+          {events.length > 0 && events.map((event: EventCardData)=> (
+            <li key={event.slug}>
               <EventCard {...event}/>
             </li>
           ))}
