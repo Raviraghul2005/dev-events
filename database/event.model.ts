@@ -113,7 +113,6 @@ const eventSchema = new Schema<Event>(
       type: String,
       trim: true,
       lowercase: true,
-      unique: true,
       validate: {
         validator: isNonEmptyString,
         message: "Slug cannot be empty.",

@@ -1,5 +1,6 @@
 'use client';
 
+import { formatEventDate } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 import posthog from "posthog-js";
@@ -33,7 +34,7 @@ const EventCard = ({title, image, slug, location, date, time}: props) => {
         <div className="datetime">
           <div>
             <Image src="/icons/calendar.svg" alt="date" width={14} height={14}/>
-            <p>{date}</p>
+            <p>{formatEventDate(date)}</p>
           </div>
           <div>
             <Image src="/icons/clock.svg" alt="time" width={14} height={14}/>
