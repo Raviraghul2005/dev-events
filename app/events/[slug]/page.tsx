@@ -6,6 +6,50 @@ import EventCard from "@/components/EventCard";
 import { formatEventDate } from "@/lib/utils";
 import { cacheLife } from "next/cache";
 import { getBookingCountByEventId } from "@/lib/actions/booking.actions";
+import type { Metadata } from "next";
+
+type EventPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const event = await getEventBySlug(slug);
+
+  if (!event) {
+    return {
+      title: "Event not found",
+    };
+  }
+
+  const eventUrl = `/events/${event.slug}`;
+
+  return {
+    title: event.title,
+    description: event.description,
+    alternates: {
+      canonical: eventUrl,
+    },
+    openGraph: {
+      type: "website",
+      title: event.title,
+      description: event.description,
+      url: eventUrl,
+      images: [
+        {
+          url: event.image,
+          alt: `${event.title} event banner`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: event.title,
+      description: event.description,
+      images: [event.image],
+    },
+  };
+}
 
 export const generateStaticParams = async () => {
   const slugs = await getEventSlugs();
@@ -77,7 +121,7 @@ const EventTags = ({tags}:{tags: string[] })=>(
 
 
 
-const EventDetailsPage = async ({params}: {params: Promise<{slug: string}>}) => {
+const EventDetailsPage = async ({params}: EventPageProps) => {
   'use cache'
   cacheLife('hours')
   

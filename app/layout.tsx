@@ -18,8 +18,36 @@ const martianMono = Martian_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DevEvent",
+  metadataBase: new URL("https://dev-events-beta-bice.vercel.app"),
+  title: {
+    default: "DevEvent",
+    template: "%s | DevEvent",
+  },
   description: "The Hub for Every Dev Event You Must not Miss",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "DevEvent",
+    title: "DevEvent",
+    description: "The Hub for Every Dev Event You Must not Miss",
+    url: "/",
+    images: [
+      {
+        url: "/images/event-full.png",
+        width: 813,
+        height: 457,
+        alt: "A developer conference audience",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DevEvent",
+    description: "The Hub for Every Dev Event You Must not Miss",
+    images: ["/images/event-full.png"],
+  },
 };
 
 export default function RootLayout({
