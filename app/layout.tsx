@@ -35,10 +35,10 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/images/event-full.png",
-        width: 813,
-        height: 457,
-        alt: "A developer conference audience",
+        url: "/images/dev-event-og.png",
+        width: 1731,
+        height: 909,
+        alt: "DevEvent homepage featuring upcoming developer events",
       },
     ],
   },
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "DevEvent",
     description: "The Hub for Every Dev Event You Must not Miss",
-    images: ["/images/event-full.png"],
+    images: ["/images/dev-event-og.png"],
   },
 };
 
