@@ -20,7 +20,9 @@ export async function POST(request: Request) {
       );
     }
 
-    if (typeof body.email !== "string" || body.email.trim().length === 0) {
+    const email = typeof body.email === "string" ? body.email.trim() : "";
+
+    if (email.length === 0) {
       return NextResponse.json(
         { message: "A valid email is required." },
         { status: 400 },
@@ -31,7 +33,7 @@ export async function POST(request: Request) {
 
     const booking = await BookingModel.create({
       eventId: body.eventId,
-      email: body.email,
+      email,
     });
 
     revalidateTag(`event-bookings-${body.eventId}`, "max");

@@ -128,9 +128,9 @@ export async function GET(){
         const events = await EventModel.find().sort({createdAt: -1});
 
         return NextResponse.json({message: 'Events fetched successfully', events},{status:200})
-    } catch(e){{
+    } catch(e){
         return NextResponse.json({message : 'Event Fetching Failed',error:e},{status:500})
-    }}
+    }
 }
 
 //a route that accepts a slug as input -> returns the event details

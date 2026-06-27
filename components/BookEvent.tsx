@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from "react"
-import { createBooking } from "@/lib/actions/booking.actions";
 import posthog from "posthog-js";
 
 const BookEvent = ({ eventId, slug }: { eventId: string, slug:string }) => {
@@ -15,15 +14,6 @@ const BookEvent = ({ eventId, slug }: { eventId: string, slug:string }) => {
         setError("");
         setIsSubmitting(true);
 
-        const {success} = await createBooking({eventId,slug,email})
-
-        if(success){
-            setSubmitted(true)
-            posthog.capture('event_booked', {eventId, slug, email})
-        }else{
-            console.error('Booking Creation Failed ')
-            posthog.captureException('Booking Creation Failed ')
-        }
         try {
             const response = await fetch("/api/bookings", {
                 method: "POST",
@@ -39,8 +29,11 @@ const BookEvent = ({ eventId, slug }: { eventId: string, slug:string }) => {
             }
 
             setSubmitted(true);
+            posthog.capture('event_booked', {eventId, slug, email})
+            return;
         } catch (error) {
             setError(error instanceof Error ? error.message : "Booking failed.");
+            posthog.captureException(error);
         } finally {
             setIsSubmitting(false);
         }
