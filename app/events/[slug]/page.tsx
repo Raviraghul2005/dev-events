@@ -4,6 +4,7 @@ import BookEvent from "@/components/BookEvent";
 import { getEventBySlug, getEventSlugs, getSimilarEventsBySlug, type EventCardData } from "@/lib/actions/event.actions";
 import EventCard from "@/components/EventCard";
 import { formatEventDate } from "@/lib/utils";
+import { cacheLife } from "next/cache";
 import { getBookingCountByEventId } from "@/lib/actions/booking.actions";
 
 export const generateStaticParams = async () => {
@@ -77,6 +78,8 @@ const EventTags = ({tags}:{tags: string[] })=>(
 
 
 const EventDetailsPage = async ({params}: {params: Promise<{slug: string}>}) => {
+  'use cache'
+  cacheLife('hours')
   
   const {slug} = await params;
   const event = await getEventBySlug(slug);
@@ -141,7 +144,7 @@ const EventDetailsPage = async ({params}: {params: Promise<{slug: string}>}) => 
               <p className="text-sm"> Be the First to book your spot!</p>
             )}
 
-            <BookEvent eventId={event._id}/>
+            <BookEvent eventId={event._id} slug={event.slug}/>
           </div>
         </aside>
       </div>
